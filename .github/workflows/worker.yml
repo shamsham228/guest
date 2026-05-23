@@ -1,0 +1,29 @@
+name: Silent Glory Engine
+
+on:
+  repository_dispatch:
+    types: [activate_bot]
+
+jobs:
+  run-headless-bot:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch Current Repository Files
+      uses: actions/checkout@v4
+
+    - name: Establish Python Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Runtime Networking Package Dependencies
+      run: pip install httpx
+
+    - name: Launch Headless Script Thread
+      run: |
+        python main.py \
+          --guild "${{ github.event.client_payload.guild_id }}" \
+          --uid1 "${{ github.event.client_payload.uid1 }}" \
+          --pass1 "${{ github.event.client_payload.pass1 }}" \
+          --uid2 "${{ github.event.client_payload.uid2 }}" \
+          --pass2 "${{ github.event.client_payload.pass2 }}"
