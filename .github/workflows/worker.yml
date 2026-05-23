@@ -20,6 +20,8 @@ jobs:
       run: pip install httpx
 
     - name: Launch Headless Script Thread
+      env:
+        PYTHONUNBUFFERED: "1" # <-- THIS IS THE CORRECTION
       run: |
         python main.py \
           --guild "${{ github.event.client_payload.guild_id }}" \
