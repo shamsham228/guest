@@ -5,7 +5,6 @@ import httpx
 API_BASE = "https://client.ind.freefiremobile.com/api/v1"
 
 def login_guest(uid, password):
-    """Submits the exact msdk credentials straight to Garena's authentication servers"""
     url = f"{API_BASE}/login/guest"
     headers = {"Content-Type": "application/json", "User-Agent": "FFClient/1.104.X"}
     payload = {
@@ -14,12 +13,15 @@ def login_guest(uid, password):
         "device_model": "HeadlessLinuxVM"
     }
     try:
-        with httpx.Client() as client:
+        # Added a 5-second timeout so it breaks instead of hanging forever
+        with httpx.Client(timeout=5.0) as client:
             res = client.post(url, json=payload, headers=headers)
             if res.status_code == 200:
                 print(f"[{uid}] Silent Authentication Success.")
                 return res.json().get("session_key")
             print(f"[{uid}] Login Denied. Code: {res.status_code}")
+    except httpx.TimeoutException:
+        print(f"[{uid}] Connection Timed Out! Garena ignored the request URL endpoint.")
     except Exception as e:
         print(f"Network error handling login for {uid}: {e}")
     return None
